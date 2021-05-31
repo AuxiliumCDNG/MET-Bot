@@ -1,4 +1,5 @@
 import asyncio
+import datetime
 import shutil
 import time
 import os
@@ -74,13 +75,15 @@ def run(req, client=None, options=None, mysql=None, res_url=None):
 
     asyncio.set_event_loop(client.loop)
 
-    history = channel.history(limit=None, before=message2.created_at, after=message1.created_at)
+    history = channel.history(limit=None, before=message2, after=message1)
     messages = asyncio.run_coroutine_threadsafe(history.flatten(), client.loop).result()
+    messages.append(message1)
+    messages.append(message2)
 
     if os.path.exists(f"web/picture_downloads/{guild.id}/"):
         shutil.rmtree(f"web/picture_downloads/{guild.id}/")
 
-    os.mkdir(f"web/picture_downloads/{guild.id}/")
+    os.makedirs(f"web/picture_downloads/{guild.id}/")
 
     for message in messages:
         if not message.attachments:
