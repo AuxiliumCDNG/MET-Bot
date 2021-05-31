@@ -101,7 +101,7 @@ def run(req, client=None, options=None, mysql=None, res_url=None):
 
     link = f"{config.address}/pictures/{guild.id}/{tokens[guild.id]['pictures']}"
     json = {
-            "content": f"Der Download steht bereit!\n{link}",
+            "content": f"Der Download steht bereit!\n{link}\nDer Link ist solange gültig, bis der nächste Bild-Download gestartet wird.",
             "embeds": [],
             "allowed_mentions": []
             }
