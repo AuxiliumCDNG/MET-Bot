@@ -14,7 +14,7 @@ from globals import zipdir, tokens
 from interactions.create import headers
 from statics import config
 
-def run(req, client=None, options=None, mysql=None, res_url=None):
+def run(req, client=None, options=None, mysql=None, res_url=None, **kwargs):
     begin = [option["value"] for option in options if option["name"] == "von"][0]
     end = [option["value"] for option in options if option["name"] == "bis"][0]
 

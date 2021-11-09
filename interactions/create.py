@@ -5,8 +5,8 @@ import requests
 from statics import config
 from statics import secrets
 
-url = f"https://discord.com/api/v8/applications/{config.DISCORD_CLIENT_ID}/commands"
-# url = f"https://discord.com/api/v8/applications/{config.DISCORD_CLIENT_ID}/guilds/844218034666209280/commands"
+# url = f"https://discord.com/api/v8/applications/{config.DISCORD_CLIENT_ID}/commands"
+url = f"https://discord.com/api/v8/applications/{config.DISCORD_CLIENT_ID}/guilds/844218034666209280/commands"
 
 commands = [
     {
@@ -30,16 +30,39 @@ commands = [
                 "required": True
             }
         ]
+    },
+    {
+        "name": "spediziel",
+        "description": "Speditionsziel abrufen und anzeigen."
+    },
+    {
+        "name": "einstellung",
+        "description": "Einstellungen ändern",
+        "options": [
+            {
+                "name": "einstellung",
+                "description": "Was geändert werden soll",
+                "type": 3,
+                "required": True
+            },
+            {
+                "name": "wert",
+                "description": "Neuer Wert der Einstellung",
+                "type": 3,
+                "required": True
+            }
+        ]
     }
 ]
 
 # For authorization, you can use either your bot token
 headers = {
-    "Authorization": f"Bot {secrets.DISCORD_BOT_TOKEN}"
+    "Authorization": f"Bot {secrets.DISCORD_BOT_TOKEN}",
+    "Content-Type": "application/json"
 }
 
 if __name__ == "__main__":
-    #"""
+    """
     r = requests.get(url, headers=headers)
     
     for command in r.json():
@@ -51,7 +74,7 @@ if __name__ == "__main__":
     #"""
 
     for json in commands:
-        time.sleep(10)
+        time.sleep(1)
         r = requests.post(url, headers=headers, json=json)
         print("created command " + json["name"])
         print(r, r.json())

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>M-E-T Discord Bot Login</title>
+
+    <link href="/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+
+    <style>
+        #info {
+            width: 70%;
+            max-width: 900px;
+            margin: 50px;
+        }
+    </style>
+</head>
+<body>
+    {% with user=user %}
+    {% include "./components/navbar.html" %}
+    {% endwith %}
+
+    <div id="info">
+        <h1>Anmeldung mit Discord OAuth2</h1>
+        <p>
+            Im Folgenden wirst du zu Discord weitergeleitet, um dich dort anzumelden. Dann wirst du gebeten, dein Konto auslesen zu lassen, damit wir dich erkennen können.
+            Deine Discord Account Daten bekommen wir dabei nicht. Du siehst eine Auflistung der Dinge, die wir dann können.
+            Dies hat den Vorteil, dass du dir kein zweites Konto erstellen musst, und wir sofort wissen, dass du entsprechende Rechte hast.
+            Bitte melde dich nun mit Discord an, um fortzufahren...
+        </p>
+        <a class="btn btn-primary" href="/login?loginUnderstand">Bestätigen und einloggen</a>
+    </div>
+    
+    {% extends "./components/toast.html" %}
+    <script src="/js/bootstrap.bundle.min.js" integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj" crossorigin="anonymous"></script>
+</body>
+</html>
