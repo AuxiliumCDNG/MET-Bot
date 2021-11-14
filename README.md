@@ -7,6 +7,6 @@ Er ist jedoch einfach anpassbar an andere Zwecke.
 * PyPi Pakete: Flask PyMySql discord_interactions flask-discord flask-talisman requests
 
 ## Drittanbieter Abhängigkeiten
-* [viewerjs](https://github.com/fengyuanchen/viewerjs)
+* [viewerjs](https://github.com/fengyuanchen/viewerjs) MIT Lizenz - keine Änderungen vorgenommen
 # MET-Bot (EN)
 Coming soon
