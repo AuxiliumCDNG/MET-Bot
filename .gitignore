@@ -1,3 +1,4 @@
 /.idea/
 /statics/config.py
 /statics/secrets.py
+/venv/
