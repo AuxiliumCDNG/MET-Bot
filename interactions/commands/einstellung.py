@@ -1,6 +1,8 @@
 import requests
+
+from helpers import change_setting, get_setting
 from interactions.create import headers
-from setting_helper import change_setting, get_setting
+
 
 def run(req, client=None, options=None, mysql=None, res_url=None, db=None, **kwargs):
     setting = [option["value"] for option in options if option["name"] == "einstellung"][0]
@@ -16,6 +18,16 @@ def run(req, client=None, options=None, mysql=None, res_url=None, db=None, **kwa
             change = False
             json = {
                 "content": "Bei der Einstellung **fahrer_rolle** wird eine Rolle erwartet.",
+                "embeds": [],
+                "allowed_mentions": []
+            }
+
+    # Prechecks for "event_rolle"
+    if setting == "event-rolle":
+        if not value["value"].startswith("<@&"):  # if value is not a role
+            change = False
+            json = {
+                "content": "Bei der Einstellung **event_rolle** wird eine Rolle erwartet.",
                 "embeds": [],
                 "allowed_mentions": []
             }

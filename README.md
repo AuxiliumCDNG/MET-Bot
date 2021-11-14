@@ -5,5 +5,8 @@ Er ist jedoch einfach anpassbar an andere Zwecke.
 ## Installation
 * Python3
 * PyPi Pakete: Flask PyMySql discord_interactions flask-discord flask-talisman requests
+
+## Drittanbieter Abhängigkeiten
+* [viewerjs](https://github.com/fengyuanchen/viewerjs)
 # MET-Bot (EN)
 Coming soon

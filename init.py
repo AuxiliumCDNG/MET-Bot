@@ -10,6 +10,7 @@ def init(db):
                        "name VARCHAR(255),"
                        "description TEXT,"
                        "truckersmp TEXT,"
+                       "date DATE,"
                        "gather DATETIME,"
                        "time DATETIME,"
                        "start VARCHAR(255),"
@@ -17,4 +18,10 @@ def init(db):
                        "pause VARCHAR(255),"
                        "server VARCHAR(255),"
                        "token VARCHAR(100)"
+                       ")")
+        cursor.execute("CREATE TABLE IF NOT EXISTS konvoi_updates ("
+                       "id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,"
+                       "konvoi_id INT,"
+                       "text TEXT,"
+                       "picture BLOB"
                        ")")

@@ -1,3 +1,4 @@
+import flask
 from flask import Blueprint, redirect, url_for, request, render_template, flash
 from flask_discord import Unauthorized
 
@@ -10,6 +11,9 @@ def login():
     if discord.authorized:
         return redirect(url_for("index"))
     if "loginUnderstand" in request.args:
+        if request.cookies.get('cookie_consent') != "true":
+            flash("Zuerst musst du Cookies akzeptieren, da der Login sonst fehlschlägt!")
+            return redirect(url_for("account.login"))
         return discord.create_session(scope=["identify", "guilds"])
     else:
         return render_template("login_splash.html", user=None)
@@ -25,6 +29,8 @@ def redirect_unauthorized(e):
 
 @views.route("/callback/")
 def callback():
+    if request.cookies.get('cookie_consent') != "true":
+        return redirect(url_for("account.login"))
     flash("Wir haben dich angemeldet!")
     discord.callback()
     if request.remote_user in login_redirects.keys():
@@ -33,3 +39,18 @@ def callback():
         flash("Du wurdest auf die angeforderte Seite weitergeleitet...")
         return redirect(target)
     return redirect(url_for("index", _external=True, _scheme='https'))
+
+@views.route("/clearCookies/")
+def clear_cookies():
+    if discord.authorized:
+        discord.revoke()
+
+    res = flask.make_response(redirect(url_for("index")))
+    for cookie in request.cookies.keys():
+        print("deleting", cookie)
+        res.set_cookie(cookie, "", expires=0, path="/")
+
+    flash("Alle Cookies wurden gelöscht. Bevor wieder welche gespeichert werden, musst du dies erneut akzeptieren. Ggf. wurdest du ausgeloggt.", category="hold")
+
+    return res
+

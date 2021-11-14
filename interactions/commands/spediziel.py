@@ -1,17 +1,15 @@
-import datetime
+import pathlib
+import binascii
+import json
+import os
 import pathlib
 import time
-import mimetypes
-from pprint import pprint
-
-import requests
-import json
 from io import BytesIO
 
-import interactions.create
+import requests
+
 from interactions.create import headers
-import binascii
-import os
+
 
 def formdata(text, filename, data):
     boundary = binascii.hexlify(os.urandom(16)).decode('ascii')

@@ -1,6 +1,6 @@
-import discord as discord_bot
 import os
 
+import discord as discord_bot
 import pymysql
 from flask import Flask
 from flask_discord import DiscordOAuth2Session
@@ -14,6 +14,8 @@ app.config["DISCORD_CLIENT_ID"] = config.Discord.client_id
 app.config["DISCORD_CLIENT_SECRET"] = config.Discord.client_secret
 app.config["DISCORD_REDIRECT_URI"] = f"{config.address}/callback/"
 app.config["DISCORD_BOT_TOKEN"] = config.Discord.bot_token
+
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1000 * 1000
 
 discord = DiscordOAuth2Session(app)
 

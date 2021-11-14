@@ -1,5 +1,5 @@
 from globals import client, db
-from setting_helper import get_setting
+from helpers import get_setting
 
 def construct_drivers_page(guild, role):
     base = """
