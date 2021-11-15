@@ -53,22 +53,22 @@ app.register_blueprint(routes.konvoi.views)
 app.register_blueprint(routes.account.views)
 app.register_blueprint(routes.misc.views)
 
+print("Datenbank wird initialisiert...")
+init(db)
+
+print("Der Bot startet...")
+
+token = secrets.DISCORD_BOT_TOKEN
+
+loop = asyncio.get_event_loop()
+loop.create_task(client.start(token))
+
+_thread.start_new_thread(loop.run_forever, tuple(), {})
+
+while not client.is_ready():
+    time.sleep(1)
+
 if __name__ == "__main__":
-    print("Datenbank wird initialisiert...")
-    init(db)
-
-    print("Der Bot startet...")
-
-    token = secrets.DISCORD_BOT_TOKEN
-
-    loop = asyncio.get_event_loop()
-    loop.create_task(client.start(token))
-
-    _thread.start_new_thread(loop.run_forever, tuple(), {})
-
-    while not client.is_ready():
-        time.sleep(1)
-
     print("Der Webserver wird gestartet...")
 
     app.run(host=config.bind, port=config.web_port, ssl_context='adhoc')
