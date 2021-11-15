@@ -1,27 +1,28 @@
 import functools
-import functools
 
 import discord.errors as derrors
 from flask import abort
 
-from globals import discord, client, db
+from globals import discord, client, connection_pool
 
 
-def change_setting(setting, value, db):
-    with db.cursor() as cursor:
+def change_setting(setting, value):
+    with connection_pool.connection() as con, con.cursor(dictionary=True) as cursor:
         if cursor.execute("SELECT * FROM settings WHERE setting='%s'" % (str(setting))) > 0:
             cursor.execute("UPDATE settings SET value='%s' WHERE setting='%s'" % (str(value), str(setting)))
         else:
             cursor.execute("INSERT INTO settings (setting, value) VALUES ('%s', '%s')" % (str(setting), str(value)))
-        db.commit()
+        con.commit()
+        cursor.close()
 
     return True
 
 
-def get_setting(setting, db):
-    with db.cursor() as cursor:
+def get_setting(setting):
+    with connection_pool.connection() as con, con.cursor(dictionary=True) as cursor:
         cursor.execute("SELECT * FROM settings WHERE setting='%s'" % (str(setting)))
         res = cursor.fetchone()
+        cursor.close()
 
     if res is not None:
         return str(res["value"])
@@ -32,7 +33,7 @@ def role_checker(role_name):
     def decorator(view):
         @functools.wraps(view)
         def wrapper(*args, **kwargs):
-            search_role = int(get_setting(role_name, db)[3:-1])
+            search_role = int(get_setting(role_name)[3:-1])
             authorized = False
             user = client.get_user(discord.user_id)
 

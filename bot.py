@@ -1,4 +1,4 @@
-from globals import client, db
+from globals import client
 from helpers import get_setting
 
 def construct_drivers_page(guild, role):
@@ -88,7 +88,7 @@ async def on_member_update(before, after):
     if before.roles == after.roles:
         return
 
-    driver_role = int(get_setting("fahrer-rolle", db)[3:-1])
+    driver_role = int(get_setting("fahrer-rolle")[3:-1])
     if bool(driver_role in [role.id for role in before.roles]) ^ bool(driver_role in [role.id for role in after.roles]):
         role = before.guild.get_role(driver_role)
         page = construct_drivers_page(before.guild.id, role)

@@ -7,11 +7,11 @@ import time
 from flask import render_template, request
 from flask_talisman import Talisman
 
+import db_init
 import routes
 import statics.secrets as secrets
 from bot import client
-from globals import app, db, discord
-from init import init
+from globals import app, discord
 from statics import config
 
 if not os.path.exists("web/update_pictures"):
@@ -54,7 +54,7 @@ app.register_blueprint(routes.account.views)
 app.register_blueprint(routes.misc.views)
 
 print("Datenbank wird initialisiert...")
-init(db)
+db_init.init()
 
 print("Der Bot startet...")
 

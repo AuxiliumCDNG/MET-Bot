@@ -5,7 +5,7 @@ import requests
 from discord_interactions import verify_key_decorator
 from flask import Blueprint, abort, send_file, request, jsonify
 
-from globals import tokens, running_interactions, client, db
+from globals import tokens, running_interactions, client
 from statics import config
 
 views = Blueprint("misc", __name__)

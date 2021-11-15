@@ -4,7 +4,7 @@ from io import BytesIO
 from flask import Blueprint, render_template, flash, url_for, redirect, request, abort, send_file
 from flask_discord import requires_authorization
 
-from globals import db, discord
+from globals import connection_pool, discord
 from helpers import role_checker
 
 views = Blueprint("konvoi", __name__, url_prefix="/konvoi/")
@@ -13,9 +13,10 @@ views = Blueprint("konvoi", __name__, url_prefix="/konvoi/")
 @requires_authorization
 @role_checker("fahrer-rolle")
 def konvoi_list():
-    with db.cursor() as cursor:
+    with connection_pool.connection() as con, con.cursor(dictionary=True) as cursor:
         cursor.execute("SELECT * FROM konvois")
         konvois = cursor.fetchall()
+        cursor.close()
     if konvois == ():
         konvois = []
 
@@ -31,9 +32,10 @@ def konvoi_list():
 @requires_authorization
 @role_checker("fahrer-rolle")
 def konvoi_archive():
-    with db.cursor() as cursor:
+    with connection_pool.connection() as con, con.cursor(dictionary=True) as cursor:
         cursor.execute("SELECT * FROM konvois")
         konvois = cursor.fetchall()
+        cursor.close()
     if konvois == ():
         konvois = []
 
@@ -49,9 +51,10 @@ def konvoi_archive():
 @requires_authorization
 @role_checker("fahrer-rolle")
 def konvoi(konvoi_id, getter=False):
-    with db.cursor() as cursor:
+    with connection_pool.connection() as con, con.cursor(dictionary=True) as cursor:
         cursor.execute("SELECT * FROM konvois WHERE `id`='%s'" % konvoi_id)
         konvoi_data = cursor.fetchone()
+        cursor.close()
     if konvoi_data is None:
         flash("Diesen Konvoi gibt es nicht in der Datenbank.")
         return redirect(url_for("konvoi.konvoi_list"))
@@ -82,11 +85,12 @@ def konvoi(konvoi_id, getter=False):
     if getter:
         return konvoi_data
 
-    with db.cursor() as cursor:
+    with connection_pool.connection() as con, con.cursor(dictionary=True) as cursor:
         cursor.execute(f"SELECT `id`, `konvoi_id`, `text` FROM `konvoi_updates` WHERE `konvoi_id`='{konvoi_id}' ORDER BY `id` DESC")
         updates = cursor.fetchall()
         cursor.execute(f"SELECT `id` FROM `konvoi_updates` WHERE `picture`<>'NULL'")
         pics = [x["id"] for x in cursor.fetchall()]
+        cursor.close()
 
     return render_template("konvoi.html", user=discord.fetch_user(), konvoi=return_data, archive=archive, updates=updates, pics=pics)
 
@@ -110,13 +114,14 @@ def create_konvoi():
         else:
             args[arg] = f"'{request.args[arg]}'"
 
-    with db.cursor() as cursor:
+    with connection_pool.connection() as con, con.cursor(dictionary=True) as cursor:
         cursor.execute(f"INSERT INTO `konvois` (`name`, `description`, `truckersmp`, `date`, `gather`, `time`, `start`, `finish`, `pause`, `server`) " \
                        f"VALUES ({args['name']},{args['description']}, {args['tmp']}, {args['date']}, {args['gather']}, {args['time']}, {args['start']}, {args['finish']}, {args['pause']}, {args['server']})")
 
         r = f"/konvoi/{cursor.lastrowid}/"
 
-        db.commit()
+        con.commit()
+        cursor.close()
 
     return redirect(r)
 
@@ -124,9 +129,10 @@ def create_konvoi():
 @requires_authorization
 @role_checker("event-rolle")
 def edit_konvoi(konvoi_id):
-    with db.cursor() as cursor:
+    with connection_pool.connection() as con, con.cursor(dictionary=True) as cursor:
         cursor.execute("SELECT `id` FROM konvois WHERE `id`='%s'" % konvoi_id)
         konvoi_data = cursor.fetchone()
+        cursor.close()
     if konvoi_data is None:
         flash("Dieser Konvoi existiert nicht!")
         return redirect(url_for("konvoi.konvoi_list"))
@@ -152,7 +158,7 @@ def edit_konvoi(konvoi_id):
         else:
             args[arg] = f"'{request.args[arg]}'"
 
-    with db.cursor() as cursor:
+    with connection_pool.connection() as con, con.cursor(dictionary=True) as cursor:
         cursor.execute(f"UPDATE `konvois` SET `name`={args['name']}, "
                        f"`description`={args['description']}, "
                        f"`truckersmp`={args['tmp']}, "
@@ -165,7 +171,8 @@ def edit_konvoi(konvoi_id):
                        f"`server`={args['server']} "
                        f"WHERE `id`='{konvoi_id}'")
 
-        db.commit()
+        con.commit()
+        cursor.close()
 
     flash("Änderungen übernommen")
     return redirect(f"/konvoi/{konvoi_id}/")
@@ -174,9 +181,10 @@ def edit_konvoi(konvoi_id):
 @requires_authorization
 @role_checker("event-rolle")
 def update_konvoi(konvoi_id):
-    with db.cursor() as cursor:
+    with connection_pool.connection() as con, con.cursor(dictionary=True) as cursor:
         cursor.execute("SELECT `id` FROM konvois WHERE `id`='%s'" % konvoi_id)
         konvoi_data = cursor.fetchone()
+        cursor.close()
     if konvoi_data is None:
         flash("Dieser Konvoi existiert nicht!")
         return redirect(url_for("konvoi.konvoi_list"))
@@ -187,11 +195,12 @@ def update_konvoi(konvoi_id):
     else:
         f = None
 
-    with db.cursor() as cursor:
+    with connection_pool.connection() as con, con.cursor(dictionary=True) as cursor:
         values = (konvoi_id, request.form['text'], f.read() if f is not None else 'NULL')
         cursor.execute(f"INSERT INTO `konvoi_updates` (`konvoi_id`, `text`, `picture`) "
                        f"VALUES (%s, %s, %s)", values)
-        db.commit()
+        con.commit()
+        cursor.close()
 
     if f is not None:
         f.close()
@@ -203,9 +212,10 @@ def update_konvoi(konvoi_id):
 @requires_authorization
 @role_checker("fahrer-rolle")
 def update_pics(update_id):
-    with db.cursor() as cursor:
+    with connection_pool.connection() as con, con.cursor(dictionary=True) as cursor:
         cursor.execute("SELECT * FROM `konvoi_updates` WHERE `id`='%s'" % update_id)
         data = cursor.fetchone()
+        cursor.close()
     if data is None or data["picture"] is None:
         return abort(404)
 

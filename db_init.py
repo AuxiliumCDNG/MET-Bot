@@ -1,5 +1,7 @@
-def init(db):
-    with db.cursor() as cursor:
+from globals import connection_pool
+
+def init():
+    with connection_pool.connection() as con, con.cursor(dictionary=True) as cursor:
         cursor.execute("CREATE TABLE IF NOT EXISTS settings ("
                        "id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,"
                        "setting VARCHAR(100),"
@@ -11,8 +13,8 @@ def init(db):
                        "description TEXT,"
                        "truckersmp TEXT,"
                        "date DATE,"
-                       "gather DATETIME,"
-                       "time DATETIME,"
+                       "gather TIME,"
+                       "time TIME,"
                        "start VARCHAR(255),"
                        "finish VARCHAR(255),"
                        "pause VARCHAR(255),"
@@ -23,5 +25,7 @@ def init(db):
                        "id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,"
                        "konvoi_id INT,"
                        "text TEXT,"
-                       "picture BLOB"
+                       "picture MEDIUMBLOB"
                        ")")
+        con.commit()
+        cursor.close()

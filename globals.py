@@ -1,7 +1,10 @@
 import os
 
 import discord as discord_bot
+import mysql.connector
+import mysql.connector.cursor
 import pymysql
+from dbutils.pooled_db import PooledDB
 from flask import Flask
 from flask_discord import DiscordOAuth2Session
 
@@ -26,6 +29,17 @@ db = pymysql.connect(
     db=config.DB.db,
     cursorclass=pymysql.cursors.DictCursor
 )
+
+connection_pool = PooledDB(mysql.connector, 5,
+                           host=config.DB.host,
+                           port=config.DB.port,
+                           user=config.DB.user,
+                           password=config.DB.password,
+                           db=config.DB.db,
+                           buffered=True
+                           )
+
+connection_pool.connection().cursor().execute("SET NAMES UTF8")
 
 intents = discord_bot.Intents.default()
 intents.reactions = True

@@ -40,6 +40,9 @@
                         {% if item == "Datum" %}
                             <div class="col-4">{{ item }}</div>
                             <div class="col-8 konvoi-date">{{ konvoi[item] }}</div>
+                        {% elif item == "TruckersMP Eintrag" %}
+                            <div class="col-4">{{ item }}</div>
+                            <div class="col-8"><a href="{{ konvoi[item] }}">{{ konvoi[item] }}</a></div>
                         {% else %}
                             <div class="col-4">{{ item }}</div>
                             <div class="col-8">{{ konvoi[item] }}</div>
@@ -67,10 +70,6 @@
             </div>
         </div>
 
-        <div id="edit-buttons" class="grid">
-            
-        </div>
-            
         <div id="updates" class="border border-3 rounded-3 mx-auto">
             <h2>Updates</h2>
             <p>

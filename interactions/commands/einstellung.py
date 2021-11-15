@@ -34,9 +34,9 @@ def run(req, client=None, options=None, mysql=None, res_url=None, db=None, **kwa
 
     # only change the setting if prechecks allow
     if change:
-        change_setting(setting, value["value"], db)
+        change_setting(setting, value["value"])
         json = {
-            "content": "Der Wert der Einstellung **%s** ist nun **%s**." % (setting, get_setting(setting, db)),
+            "content": "Der Wert der Einstellung **%s** ist nun **%s**." % (setting, get_setting(setting)),
             "embeds": [],
             "allowed_mentions": []
         }
