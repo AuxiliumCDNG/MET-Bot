@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>M-E-T Konvoi erstellen</title>
+
+    <link rel="stylesheet" href="/css/common.css">
+    <link href="/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+</head>
+<body>
+    {% with user=user %}
+    {% include "./components/navbar.html" %}
+    {% endwith %}
+
+    <main>
+        <div id="header" class="container-sm">
+            {% if fill == {} %}
+                <h2>Konvoi erstellen</h2>
+            {% else %}
+                <h2>Konvoi editieren</h2>
+            {% endif %}
+        </div>
+        <div id="konvoi-form" class="border border-3 rounded-3 mx-auto">
+            {% if fill == {} %}
+            <a id="back-arrow" href="/konvoi/"><h5>🠐 Zurück zur Liste</h5></a>
+            {% else %}
+            <a id="back-arrow" href="/konvoi/{{fill.id}}/"><h5>🠐 Zurück zum Konvoi</h5></a>
+            {% endif %}
+
+            <p>
+                Felder mit <span class="form-required">*</span> sind obligatorisch.<br>
+                Du kannst diese Daten später editieren, indem du den Konvoi in der Liste aufrufst.
+            </p>
+            <form action="{{ request.path }}">
+                <div class="mb-3">
+                  <label for="konvoi-name" class="form-label">Konvoi Name <span class="form-required">*</span></label>
+                  <input type="text" class="form-control" id="konvoi-name" name="name" value="{{ fill.name }}">
+                </div>
+                <div class="mb-3">
+                    <label for="konvoi-description" class="form-label">Beschreibung</label>
+                    <textarea type="text" class="form-control" id="konvoi-description" rows="6" name="description">{{ fill.description }}</textarea>
+                </div>
+                <div class="mb-3">
+                    <label for="konvoi-link" class="form-label">Truckers-MP Link</label>
+                    <input type="url" class="form-control" id="konvoi-link" name="tmp" value="{{ fill.truckersmp }}">
+                </div>
+                <div class="mb-3">
+                    <label for="konvoi-date" class="form-label">Datum</label>
+                    <input type="date" class="form-control" id="konvoi-date" name="date" value="{{ fill.date }}">
+                </div>
+                <div class="mb-3">
+                    <label for="konvoi-gather" class="form-label">Treffen</label>
+                    <input type="time" class="form-control" id="konvoi-gather" name="gather" value="{{ fill.gather }}">
+                </div>
+                <div class="mb-3">
+                    <label for="konvoi-time" class="form-label">Beginn</label>
+                    <input type="time" class="form-control" id="konvoi-time" name="time" value="{{ fill.time }}">
+                </div>
+                <div class="mb-3">
+                    <label for="konvoi-start" class="form-label">Start</label>
+                    <input type="text" class="form-control" id="konvoi-start" name="start" value="{{ fill.start }}">
+                </div>
+                <div class="mb-3">
+                    <label for="konvoi-finish" class="form-label">Ende (ggf. Länge)</label>
+                    <input type="text" class="form-control" id="konvoi-finish" name="finish" value="{{ fill.finish }}">
+                </div>
+                <div class="mb-3">
+                    <label for="konvoi-pause" class="form-label">Pause (ggf. Entfernung)</label>
+                    <input type="text" class="form-control" id="konvoi-pause" name="pause" value="{{ fill.pause }}">
+                </div>
+                <div class="mb-3">
+                    <label for="konvoi-server" class="form-label">Server (ProMods?)</label>
+                    <input type="text" class="form-control" id="konvoi-start" name="server" value="{{ fill.server }}">
+                </div>
+                
+                <button type="submit" class="btn btn-primary">{% if fill == {} %}Konvoi erstellen{% else %}Konvoi editieren{% endif %}</button>
+            </form>
+        </div>
+    </main>
+
+    {% extends "./components/toast.html" %}
+    
+    <script src="/js/bootstrap.bundle.min.js" integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj" crossorigin="anonymous"></script>
+</body>
+</html>

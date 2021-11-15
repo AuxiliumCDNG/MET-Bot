@@ -1,0 +1,31 @@
+#konvoi, #updates {
+    margin-top: 50px;
+    padding: 10px;
+    min-width: 100px;
+    width: 70%;
+    max-width: 900px;
+}
+
+#updates {
+    margin-top: 10px;
+}
+
+#konvoi h2, #updates h2 {
+    text-align: center;
+}
+
+#edit-buttons {
+    overflow: hidden;
+
+    margin-top: 20px;
+    
+    min-width: 100px;
+    width: 70%;
+    max-width: 900px;
+
+    text-align: center;
+}
+
+.update-pic {
+    cursor: pointer;
+}

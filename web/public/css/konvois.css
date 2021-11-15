@@ -1,0 +1,33 @@
+#konvois {
+    margin-top: 10px;
+    margin-bottom: 20px;
+
+    min-width: 100px;
+    width: 70%;
+    max-width: 900px;
+}
+.konvoi {
+    margin-top: 10px;
+    padding: 10px;
+    
+    
+    transition: 300ms;
+}
+.konvoi:hover {
+    border-width: 10px !important;
+    padding: 3px !important;
+}
+
+#konvoi-name {
+    text-align: center;
+}
+#konvoi-name a p {
+    color: black;
+}
+#konvoi-name a {
+    font-size: x-large;
+    text-decoration: none;
+}
+#konvoi-name a:hover {
+    text-decoration: underline black;
+}

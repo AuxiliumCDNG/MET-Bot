@@ -1,0 +1,34 @@
+<div id="navbar">
+  <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top" style="width: 100%;">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="/">M-E-T Discord Bot</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0" style="width: 100%;">
+          <li class="nav-item">
+            <a class="nav-link active" href="/">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active" href="/konvoi/">Konvois</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active" href="/konvoi/archive/">Konvoi Archiv</a>
+          </li>
+
+          {% if user == None %}
+            <li class="nav-item">
+              <a class="nav-link float-end" href="/login/">Einloggen</a>
+            </li>
+          {% else %}
+            <li class="nav-item">
+              <a class="nav-link float-end" href="/logout/">Angemeldet als {{ user.name }}, ausloggen</a>
+            </li>
+          {% endif %}
+        </ul>
+        <a href="/clearCookies/" id="cookie-clear" class="nav-item float-end">Cookies ablehnen</a>
+      </div>
+    </div>
+  </nav>
+</div>

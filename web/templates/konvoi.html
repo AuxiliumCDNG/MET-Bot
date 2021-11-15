@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>M-E-T Konvoi - {{ konvoi.name }}</title>
+
+    <link rel="stylesheet" href="/css/common.css">
+    <link rel="stylesheet" href="/css/konvoi.css">
+    <link href="/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+   
+    <script src="/js/konvoi.js" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/luxon/1.26.0/luxon.min.js"></script>
+    <script src="/js/viewer.min.js"></script>
+    <script src="/js/bootstrap.bundle.min.js" integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj" crossorigin="anonymous"></script>
+
+    <link  href="/css/viewer.min.css" rel="stylesheet">
+</head>
+<body>
+    {% with user=user %}
+    {% include "./components/navbar.html" %}
+    {% endwith %}
+
+    <main>
+        {% if archive %}
+            <div id="header" class="container-sm">
+                <h2>Archivierter Konvoi</h2>
+            </div>
+        {% endif %}
+        <div id="konvoi" class="border border-3 rounded-3 mx-auto">
+            <a id="back-arrow" href="../"><h5>🠐 Zurück zur Liste</h5></a>
+
+            <h2>{{ konvoi.name }}</h2>
+            {% for item in konvoi.keys() %}
+                {% if konvoi[item] != None and item not in ["id", "name"] %}
+                <hr>
+                <div class="container">
+                    <div class="row">
+                        {% if item == "Datum" %}
+                            <div class="col-4">{{ item }}</div>
+                            <div class="col-8 konvoi-date">{{ konvoi[item] }}</div>
+                        {% else %}
+                            <div class="col-4">{{ item }}</div>
+                            <div class="col-8">{{ konvoi[item] }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endif %}
+            {% endfor %}
+            <hr>
+        </div>
+
+        <div id="edit-buttons" class="grid mx-auto">
+            <div class="row">
+                <div class="col-3">
+                    <a href="/konvoi/edit/{{konvoi.id}}/"><button type="button" class="btn btn-primary">Konvoi editieren</button></a>
+                </div>
+                <div class="col">
+                    <h5 style="margin-bottom: 0;"><- Nur für Event-Manager -></h5>
+                </div>
+                <div class="col-3">
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#updateMessageModal">
+                        Update posten
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div id="edit-buttons" class="grid">
+            
+        </div>
+            
+        <div id="updates" class="border border-3 rounded-3 mx-auto">
+            <h2>Updates</h2>
+            <p>
+                Updates sind kleine Nachrichten, die Event-Manager absetzen können, um weitere oder aktuellere Informationen zu übermitteln.
+                Sie unterstützen auch Bilder!
+            </p>
+            <hr>
+            {% for update in updates %}
+                <div class="container">
+                <div class="row">
+                    <div class="col update"><p>{{ update.text }}</p></div>
+                    {% if update.id in pics %}
+                    <div class="col"><img src="/konvoi/updates/pics/{{ update.id }}/" alt="" class="update-pic img-fluid float-end"></div>    
+                    {% endif %}
+                </div>
+                </div>
+                <hr>
+            {% endfor %}
+        </div>
+    </main>
+    
+    <div class="modal fade" id="updateMessageModal" tabindex="-1" aria-labelledby="updateMessageModal-title" aria-hidden="true">
+        <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+            <h5 class="modal-title" id="updateMessageModal-title">Update posten</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form action="/konvoi/update/{{ konvoi.id }}/" method="post" enctype="multipart/form-data">
+                    <div class="mb-3">
+                        <label for="update-text" class="form-label">Update Text <span class="form-required">*</span></label>
+                        <input type="text" class="form-control" id="update-text" name="text">
+                    </div>
+                    <div class="mb-3">
+                        <label for="update-picture" class="form-label">Bild</label>
+                        <input type="file" class="form-control" id="update-picture" name="picture" accept="image/*">
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Update abschicken</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        </div>
+    </div>
+
+    {% extends "./components/toast.html" %}
+</body>
+</html>

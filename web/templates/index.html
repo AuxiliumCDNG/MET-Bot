@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>M-E-T Discord Bot Interface</title>
+
+    <link rel="stylesheet" href="/css/common.css">
+    <link href="/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+</head>
+
+<body style="height: 100vh; overflow: hidden;">
+    {% with user=user %}
+        {% include "./components/navbar.html" %}
+    {% endwith %}
+    <iframe src="https://m-e-t.org" frameborder="0" style="width: 100%; height: calc(100% - 56px); position: fixed; top: 56px;"></iframe>
+    
+    {% extends "./components/toast.html" %}
+
+    <script src="/js/bootstrap.bundle.min.js" integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj" crossorigin="anonymous"></script>
+</body>
+</html>

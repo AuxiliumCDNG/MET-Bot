@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>M-E-T Konvois</title>
+
+    <link rel="stylesheet" href="/css/common.css">
+    <link rel="stylesheet" href="/css/konvois.css">
+    <link href="/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+
+    <script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="   crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/luxon/1.26.0/luxon.min.js"></script>
+    <script type="text/javascript" src="/js/konvoi.js"></script>
+</head>
+
+<body>
+    {% with user=user %}
+        {% include "./components/navbar.html" %}
+    {% endwith %}
+
+    <main>
+        <div id="header" class="container-sm">
+            <h2>{{ title }}</h2>
+        </div>
+        <div id="konvois" class="container-sm">
+            <a href="/konvoi/create/"><button type="button" class="btn btn-primary">Neuer Konvoi</button></a>
+
+            {% for konvoi in konvois %}
+                <div class="konvoi border border-3 rounded-3 mx-auto">
+                    <div id="konvoi-name">
+                        <a href="{{ konvoi.id }}/"><p>{{ konvoi.name }}</p></a>
+                    </div>
+                    {% if konvoi.description != None %}
+                        <p>{{ konvoi.description }}</p>
+                    {% endif %}
+                    {% if konvoi.date != None %}
+                        <p class="konvoi-date text-end">{{ konvoi.date }}{% if konvoi.gather != None %} {{ konvoi.gather }}{% endif %}</p>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+    </main>
+
+    {% extends "./components/toast.html" %}
+
+    <script src="/js/bootstrap.bundle.min.js" integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj" crossorigin="anonymous"></script>
+</body>
+</html>
