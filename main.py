@@ -71,4 +71,4 @@ while not client.is_ready():
 if __name__ == "__main__":
     print("Der Webserver wird gestartet...")
 
-    app.run(host=config.bind, port=config.web_port, ssl_context='adhoc')
+    app.run(host=config.bind, port=config.web_port, ssl_context=config.ssl)

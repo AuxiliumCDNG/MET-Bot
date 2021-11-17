@@ -4,7 +4,7 @@ from helpers import change_setting, get_setting
 from interactions.create import headers
 
 
-def run(req, client=None, options=None, mysql=None, res_url=None, db=None, **kwargs):
+def run(req, options=None, res_url=None, **kwargs):
     setting = [option["value"] for option in options if option["name"] == "einstellung"][0]
     value = [option for option in options if option["name"] == "wert"][0]
 

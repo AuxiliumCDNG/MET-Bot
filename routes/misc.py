@@ -70,7 +70,7 @@ def interaction():
 
     res_url = f"https://discord.com/api/v8/webhooks/{config.DISCORD_CLIENT_ID}/{req['token']}/messages/@original"
 
-    t = threading.Thread(name=name, target=module.run, args=[req], kwargs={"client": client, "options": option_level, "res_url": res_url, "db": db})
+    t = threading.Thread(name=name, target=module.run, args=[req], kwargs={"client": client, "options": option_level, "res_url": res_url})
     t.start()
 
     if req["guild_id"] not in running_interactions.keys():

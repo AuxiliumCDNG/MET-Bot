@@ -5,7 +5,7 @@ import requests
 from interactions.create import headers
 
 
-def run(req, client=None, options=None, mysql=None, res_url=None, **kwargs):
+def run(req, res_url=None, **kwargs):
     time.sleep(3)
 
     json = {

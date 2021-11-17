@@ -40,7 +40,7 @@ def formdata(text, filename, data):
     return body
 
 
-def run(req, client=None, options=None, mysql=None, res_url=None, **kwargs):
+def run(req, res_url=None, **kwargs):
     data = requests.get("https://api.sped-v.de/v1/spedition/targets",
                         headers={
                             "X-Api-Key": "oHkxbJSRe5-42HcxBzikFEXHuOjBXsyY7oYTFmORkbG4bOIo26J1s3ab0YfiQqP-gVG7aegiLVuZGkKzGUUwSQ--"}).json()
