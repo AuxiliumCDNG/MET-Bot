@@ -27,5 +27,10 @@ def init():
                        "text TEXT,"
                        "picture MEDIUMBLOB"
                        ")")
+        cursor.execute("CREATE TABLE IF NOT EXISTS presence ("
+                       "user_id BIGINT UNSIGNED PRIMARY KEY NOT NULL,"
+                       "konvoi_id INT,"
+                       "status VARCHAR(255)"
+                       ")")
         con.commit()
         cursor.close()

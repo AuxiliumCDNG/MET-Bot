@@ -45,7 +45,7 @@ intents = discord_bot.Intents.default()
 intents.reactions = True
 intents.members = True
 intents.guilds = True
-client = discord_bot.Client(intents=intents)
+client = discord_bot.Client(intents=intents, member_cache_flags=discord_bot.MemberCacheFlags().from_intents(intents))
 
 running_interactions = dict()
 

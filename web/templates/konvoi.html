@@ -13,6 +13,7 @@
     <script src="/js/konvoi.js" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/luxon/1.26.0/luxon.min.js"></script>
     <script src="/js/viewer.min.js"></script>
+    <script src="/js/chart.min.js"></script>
     <script src="/js/bootstrap.bundle.min.js" integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj" crossorigin="anonymous"></script>
 
     <link  href="/css/viewer.min.css" rel="stylesheet">
@@ -54,22 +55,30 @@
             <hr>
         </div>
 
-        <div id="edit-buttons" class="grid mx-auto">
-            <div class="row">
-                <div class="col-3">
-                    <a href="/konvoi/edit/{{konvoi.id}}/"><button type="button" class="btn btn-primary">Konvoi editieren</button></a>
-                </div>
-                <div class="col">
-                    <h5 style="margin-bottom: 0;"><- Nur für Event-Manager -></h5>
-                </div>
-                <div class="col-3">
-                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#updateMessageModal">
-                        Update posten
-                    </button>
+        <div id="presence" class="border border-3 rounded-3 mx-auto">
+            <h2>Teilnahme</h2>
+            <p>Teile uns bitte über diese Knöpfe mit, ob du am Konvoi teilnehmens wirst. Ähnlich kennst du es aus Truckers-MP.</p>
+
+            <div class="container">
+                <div class="row justify-content-md-center">
+                  <div class="col-md-auto">
+                    <a href="/konvoi/presence/{{ konvoi.id }}/?status=attend">
+                        <button type="button" class="btn {% if presence == 'attend' %}btn-success{% else %}btn-primary{% endif %}">Teilnehmen</button>
+                    </a>
+                  </div>
+                  <div class="col-md-auto">
+                    <a href="/konvoi/presence/{{ konvoi.id }}/?status=missing">
+                        <button type="button" class="btn {% if presence == 'missing' %}btn-success{% else %}btn-primary{% endif %}">Nicht teilnehmen</button>
+                    </a>
+                  </div>
+                  <div class="col-md-auto">
+                    <a href="/konvoi/presence/{{ konvoi.id }}/?status=unsure">
+                        <button type="button" class="btn {% if presence == 'unsure' %}btn-success{% else %}btn-primary{% endif %}">Unsicher</button>
+                    </a>
+                  </div>
                 </div>
             </div>
         </div>
-
         <div id="updates" class="border border-3 rounded-3 mx-auto">
             <h2>Updates</h2>
             <p>
@@ -89,6 +98,87 @@
                 <hr>
             {% endfor %}
         </div>
+
+        {% if "event-rolle" in roles %}
+        <div id="event-manager" class="border border-3 rounded-3 mx-auto">
+            <h2>Event Management</h2>
+            <div id="edit-buttons" class="grid mx-auto">
+                <div class="container">
+                    <div class="row justify-content-md-center">
+                        <div class="col-md-auto">
+                            <a href="/konvoi/edit/{{konvoi.id}}/"><button type="button" class="btn btn-primary">Konvoi editieren</button></a>
+                        </div>
+                        <div class="col-md-auto">
+                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#updateMessageModal">Update posten</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="presence-chart" class="mx-auto">
+                <canvas id="presenceChart" width="200" height="200"></canvas>
+                <script>
+                    new Chart("presenceChart", {
+                        type: "doughnut",
+                        data: {
+                            labels: ["nehmen Teil", "nehmen nicht Teil", "unsicher"],
+                            datasets: [{
+                                label: 'Teilnahme',
+                                data: {{ presence_chart_data|tojson }},
+                                backgroundColor: [
+                                    'rgba(21, 115, 71, 0.2)',
+                                    'rgba(255, 99, 132, 0.2)',
+                                    'rgba(54, 162, 235, 0.2)'
+                                ],
+                                borderColor: [
+                                    'rgba(21, 115, 71, 1)',
+                                    'rgba(255, 99, 132, 1)',
+                                    'rgba(54, 162, 235, 1)'
+                                ],
+                            }]
+                        }
+                    });
+                </script>
+            </div>
+            <div id="presence-table">
+                <div class="container">
+                    <div class="row">
+                        <div class="col border"><h5>nehmen Teil</h5></div>
+                        <div class="col border"><h5>nehmen nicht Teil</h5></div>
+                        <div class="col border"><h5>unsicher</h5></div>
+                    </div>
+                    <div class="row justify-content-md-center">
+                        <div class="col">
+                            {% for user in konvoi_presence.keys() %}
+                            {% if konvoi_presence[user]["status"] == "attend" %}
+                                <div class="row">
+                                    <div class="col mini-box border">{{ konvoi_presence[user]["name"] }}</div>
+                                </div>
+                            {% endif %}
+                            {% endfor %}
+                        </div>
+                        <div class="col">
+                            {% for user in konvoi_presence.keys() %}
+                            {% if konvoi_presence[user]["status"] == "missing" %}
+                                <div class="row">
+                                    <div class="col mini-box border">{{ konvoi_presence[user]["name"] }}</div>
+                                </div>
+                            {% endif %}
+                            {% endfor %}
+                        </div>
+                        <div class="col">
+                            {% for user in konvoi_presence.keys() %}
+                            {% if konvoi_presence[user]["status"] == "unsure" %}
+                                <div class="row">
+                                    <div class="col mini-box border">{{ konvoi_presence[user]["name"] }}</div>
+                                </div>
+                            {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
     </main>
     
     <div class="modal fade" id="updateMessageModal" tabindex="-1" aria-labelledby="updateMessageModal-title" aria-hidden="true">
@@ -118,6 +208,6 @@
         </div>
     </div>
 
-    {% extends "./components/toast.html" %}
+    {% include "./components/toast.html" %}
 </body>
 </html>

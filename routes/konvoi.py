@@ -1,13 +1,35 @@
+import asyncio
 import datetime
 from io import BytesIO
 
+import flask
 from flask import Blueprint, render_template, flash, url_for, redirect, request, abort, send_file
 from flask_discord import requires_authorization
 
-from globals import connection_pool, discord
-from helpers import role_checker
+from globals import connection_pool, discord, client
+from helpers import role_checker, roles_getter
 
 views = Blueprint("konvoi", __name__, url_prefix="/konvoi/")
+
+
+class KonvoiNotFoundError(Exception):
+    pass
+
+def is_archive(konvoi_id):
+    with connection_pool.connection() as con, con.cursor(dictionary=True) as cursor:
+        cursor.execute("SELECT * FROM konvois WHERE `id`='%s'" % konvoi_id)
+        konvoi_data = cursor.fetchone()
+        cursor.close()
+    if konvoi_data is None:
+        raise KonvoiNotFoundError
+
+    today = datetime.date.today().toordinal()
+    try:
+        archive = konvoi_data["date"].toordinal() < today
+    except AttributeError:
+        archive = False
+
+    return archive, konvoi_data
 
 @views.route("/")
 @requires_authorization
@@ -50,23 +72,18 @@ def konvoi_archive():
 @views.route("/archive/<int:konvoi_id>/")
 @requires_authorization
 @role_checker("fahrer-rolle")
-def konvoi(konvoi_id, getter=False):
-    with connection_pool.connection() as con, con.cursor(dictionary=True) as cursor:
-        cursor.execute("SELECT * FROM konvois WHERE `id`='%s'" % konvoi_id)
-        konvoi_data = cursor.fetchone()
-        cursor.close()
-    if konvoi_data is None:
-        flash("Diesen Konvoi gibt es nicht in der Datenbank.")
-        return redirect(url_for("konvoi.konvoi_list"))
-
-    today = datetime.date.today().toordinal()
+@roles_getter()
+def konvoi(konvoi_id, getter=False, roles=None):
     try:
-        archive = konvoi_data["date"].toordinal() < today
-    except AttributeError:
-        archive = False
+        archive, konvoi_data = is_archive(konvoi_id)
+    except KonvoiNotFoundError:
+        flash("Dieser Konvoi existiert nicht!")
+        return redirect(url_for("konvoi.konvoi_list"))
 
     if archive and not request.path.__contains__("archive"):
         return redirect("/konvoi/archive/%s/" % konvoi_id)
+    elif not archive and request.path.__contains__("archive"):
+        return redirect("/konvoi/%s/" % konvoi_id)
 
     return_data = {
         "id": konvoi_data["id"],
@@ -88,11 +105,45 @@ def konvoi(konvoi_id, getter=False):
     with connection_pool.connection() as con, con.cursor(dictionary=True) as cursor:
         cursor.execute(f"SELECT `id`, `konvoi_id`, `text` FROM `konvoi_updates` WHERE `konvoi_id`='{konvoi_id}' ORDER BY `id` DESC")
         updates = cursor.fetchall()
+
         cursor.execute(f"SELECT `id` FROM `konvoi_updates` WHERE `picture`<>'NULL'")
         pics = [x["id"] for x in cursor.fetchall()]
-        cursor.close()
 
-    return render_template("konvoi.html", user=discord.fetch_user(), konvoi=return_data, archive=archive, updates=updates, pics=pics)
+        cursor.execute(f"SELECT `user_id`, `status` FROM `presence` WHERE `user_id`='{discord.user_id}' AND `konvoi_id`='{konvoi_id}'")
+        res = cursor.fetchone()
+        user_presence = res["status"] if res is not None else "unselected"
+
+        if "event-rolle" in roles:
+            cursor.execute(f"SELECT `user_id`, `status` FROM `presence` WHERE`konvoi_id`='{konvoi_id}'")
+            res = cursor.fetchall()
+
+            konvoi_presence = dict()
+            for pres in res:
+                user = client.get_user(int(pres["user_id"]))
+                if user is None:
+                    user = asyncio.run_coroutine_threadsafe(client.fetch_user(int(pres["user_id"])), client.loop).result()
+                konvoi_presence[pres["user_id"]] = {"status": pres["status"], "name": user.name if user is not None else pres["user_id"]}
+
+            presence_chart_data = [len([x for x in konvoi_presence.keys() if konvoi_presence[x]["status"] == "attend"]),
+                                   len([x for x in konvoi_presence.keys() if konvoi_presence[x]["status"] == "missing"]),
+                                   len([x for x in konvoi_presence.keys() if konvoi_presence[x]["status"] == "unsure"])]
+        else:
+            konvoi_presence = None
+            presence_chart_data = None
+
+        cursor.close()
+        con.close()
+
+    return render_template("konvoi.html",
+                           user=discord.fetch_user(),
+                           roles=roles,
+                           konvoi=return_data,
+                           archive=archive,
+                           updates=updates,
+                           pics=pics,
+                           presence=user_presence,
+                           konvoi_presence=konvoi_presence,
+                           presence_chart_data=presence_chart_data)
 
 @views.route("/create/")
 @requires_authorization
@@ -222,3 +273,22 @@ def update_pics(update_id):
     f = BytesIO(data["picture"])
 
     return send_file(f, mimetype="image/jpg")
+
+@views.route("/presence/<int:konvoi_id>/")
+@requires_authorization
+@role_checker("fahrer-rolle")
+def presence(konvoi_id):
+    if request.args["status"] not in ["attend", "missing", "unsure"]:
+        return abort(flask.Response(response="Valid arguments for 'status' are: 'attend', 'missing', and 'unsure'", status=400))
+
+    with connection_pool.connection() as con, con.cursor(dictionary=True) as cursor:
+        cursor.execute(f"INSERT INTO `presence` (`user_id`, `konvoi_id`, `status`) "
+                       f"VALUES ('{discord.user_id}', '{konvoi_id}', '{request.args['status']}') "
+                       f"ON DUPLICATE KEY "
+                       f"UPDATE `status`='{request.args['status']}'")
+
+        con.commit()
+        con.close()
+
+    flash("Deine Rückmeldung wurde gespeichert. Vielen Dank!")
+    return redirect(url_for("konvoi.konvoi", konvoi_id=konvoi_id))

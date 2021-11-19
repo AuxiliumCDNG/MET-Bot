@@ -1,4 +1,7 @@
-#konvoi, #updates {
+#konvoi,
+#updates,
+#presence,
+#event-manager {
     margin-top: 50px;
     padding: 10px;
     min-width: 100px;
@@ -6,11 +9,15 @@
     max-width: 900px;
 }
 
-#updates {
+#updates,
+#event-manager {
     margin-top: 10px;
 }
 
-#konvoi h2, #updates h2 {
+#konvoi h2,
+#updates h2,
+#presence h2,
+#event-manager h2 {
     text-align: center;
 }
 
@@ -28,4 +35,15 @@
 
 .update-pic {
     cursor: pointer;
+}
+
+#presence {
+    margin-top: 10px;
+}
+#presence-chart {
+    margin-top: 20px;
+    max-width: 400px;
+}
+#presence-table {
+    margin-top: 20px;
 }

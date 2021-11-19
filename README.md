@@ -9,5 +9,6 @@ Er ist jedoch einfach anpassbar an andere Zwecke.
 ## Drittanbieter Abhängigkeiten
 * [viewerjs](https://github.com/fengyuanchen/viewerjs) MIT Lizenz - keine Änderungen vorgenommen
 * [bootstrap](https://github.com/twbs/bootstrap) MIT Lizenz - keine Änderungen vorgenommen
+* [Chart.js](https://github.com/chartjs/Chart.js) MIT Lizenz - keine Änderungen vorgenommen
 # MET-Bot (EN)
 Coming soon
