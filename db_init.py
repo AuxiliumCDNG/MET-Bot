@@ -28,7 +28,8 @@ def init():
                        "picture MEDIUMBLOB"
                        ")")
         cursor.execute("CREATE TABLE IF NOT EXISTS presence ("
-                       "user_id BIGINT UNSIGNED PRIMARY KEY NOT NULL,"
+                       "id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,"
+                       "user_id BIGINT UNSIGNED,"
                        "konvoi_id INT,"
                        "status VARCHAR(255)"
                        ")")

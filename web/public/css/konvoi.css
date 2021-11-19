@@ -4,7 +4,7 @@
 #event-manager {
     margin-top: 50px;
     padding: 10px;
-    min-width: 100px;
+    min-width: 750px;
     width: 70%;
     max-width: 900px;
 }
@@ -46,4 +46,15 @@
 }
 #presence-table {
     margin-top: 20px;
+}
+
+@media only screen and (max-width: 800px) {
+    #konvoi,
+    #header,
+    #presence,
+    #updates,
+    #event-manager {
+        min-width: 100px;
+        width: 99%;
+    }
 }

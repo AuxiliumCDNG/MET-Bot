@@ -282,10 +282,12 @@ def presence(konvoi_id):
         return abort(flask.Response(response="Valid arguments for 'status' are: 'attend', 'missing', and 'unsure'", status=400))
 
     with connection_pool.connection() as con, con.cursor(dictionary=True) as cursor:
-        cursor.execute(f"INSERT INTO `presence` (`user_id`, `konvoi_id`, `status`) "
-                       f"VALUES ('{discord.user_id}', '{konvoi_id}', '{request.args['status']}') "
-                       f"ON DUPLICATE KEY "
-                       f"UPDATE `status`='{request.args['status']}'")
+        cursor.execute(f"SELECT `id` FROM `presence` WHERE `user_id`='{discord.user_id}' AND `konvoi_id`='{konvoi_id}'")
+        if len(cursor.fetchall()) > 0:
+            cursor.execute(f"UPDATE `presence` SET `status`='{request.args['status']}' WHERE `user_id`='{discord.user_id}' AND `konvoi_id`={konvoi_id}")
+        else:
+            cursor.execute(f"INSERT INTO `presence` (`user_id`, `konvoi_id`, `status`) "
+                           f"VALUES ('{discord.user_id}', '{konvoi_id}', '{request.args['status']}')")
 
         con.commit()
         con.close()
