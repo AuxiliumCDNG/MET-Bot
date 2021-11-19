@@ -8,7 +8,8 @@ from globals import discord, client, connection_pool
 
 def change_setting(setting, value):
     with connection_pool.connection() as con, con.cursor(dictionary=True) as cursor:
-        if cursor.execute("SELECT * FROM settings WHERE setting='%s'" % (str(setting))) > 0:
+        cursor.execute("SELECT * FROM settings WHERE setting='%s'" % (str(setting)))
+        if len(cursor.fetchall()) > 0:
             cursor.execute("UPDATE settings SET value='%s' WHERE setting='%s'" % (str(value), str(setting)))
         else:
             cursor.execute("INSERT INTO settings (setting, value) VALUES ('%s', '%s')" % (str(setting), str(value)))
@@ -64,7 +65,6 @@ def roles_getter():
     def decorator(view):
         @functools.wraps(view)
         def wrapper(*args, **kwargs):
-            authorized = False
             user = client.get_user(discord.user_id)
 
             if user is None:
@@ -81,7 +81,6 @@ def roles_getter():
                 member = guild.get_member(user.id)
                 roles = [role.id for role in member.roles]
 
-                role_names = []
                 with connection_pool.connection() as con, con.cursor(dictionary=True) as cursor:
                     for role in roles:
                         cursor.execute(f"SELECT `setting` FROM `settings` WHERE `value`='<@&{role}>'")
