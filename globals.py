@@ -3,7 +3,6 @@ import os
 import discord as discord_bot
 import mysql.connector
 import mysql.connector.cursor
-import pymysql
 from dbutils.pooled_db import PooledDB
 from flask import Flask
 from flask_discord import DiscordOAuth2Session
@@ -21,14 +20,6 @@ app.config["DISCORD_BOT_TOKEN"] = config.Discord.bot_token
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1000 * 1000
 
 discord = DiscordOAuth2Session(app)
-
-db = pymysql.connect(
-    host=config.DB.host,
-    user=config.DB.user,
-    password=config.DB.password,
-    db=config.DB.db,
-    cursorclass=pymysql.cursors.DictCursor
-)
 
 connection_pool = PooledDB(mysql.connector, 5,
                            host=config.DB.host,
