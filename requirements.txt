@@ -1,0 +1,9 @@
+requests==2.27.1
+Flask
+cryptography
+Flask-Discord
+flask-talisman
+DBUtils
+discord.py
+discord-interactions
+mysql-connector
