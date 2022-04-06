@@ -25,7 +25,8 @@ def is_archive(konvoi_id):
 
     today = datetime.date.today().toordinal()
     try:
-        archive = konvoi_data["date"].toordinal() < today
+        konvoi_date = konvoi_data["date"].toordinal()
+        archive = konvoi_date < today
     except AttributeError:
         archive = False
 
@@ -180,6 +181,11 @@ def create_konvoi():
 @requires_authorization
 @role_checker("event-rolle")
 def edit_konvoi(konvoi_id):
+    archive, konvoi_data = is_archive(konvoi_id)
+    if archive:
+        flash("Dieser Konvoi kann nicht bearbeitet werden, da er zu alt ist und daher archiviert wurde.")
+        return redirect(url_for("konvoi.konvoi", konvoi_id=konvoi_id))
+
     with connection_pool.connection() as con, con.cursor(dictionary=True) as cursor:
         cursor.execute("SELECT `id` FROM konvois WHERE `id`='%s'" % konvoi_id)
         konvoi_data = cursor.fetchone()
@@ -232,6 +238,11 @@ def edit_konvoi(konvoi_id):
 @requires_authorization
 @role_checker("event-rolle")
 def update_konvoi(konvoi_id):
+    archive, konvoi_data = is_archive(konvoi_id)
+    if archive:
+        flash("Dieser Konvoi kann nicht bearbeitet werden, da er zu alt ist und daher archiviert wurde.")
+        return redirect(url_for("konvoi.konvoi", konvoi_id=konvoi_id))
+
     with connection_pool.connection() as con, con.cursor(dictionary=True) as cursor:
         cursor.execute("SELECT `id` FROM konvois WHERE `id`='%s'" % konvoi_id)
         konvoi_data = cursor.fetchone()
@@ -278,6 +289,11 @@ def update_pics(update_id):
 @requires_authorization
 @role_checker("fahrer-rolle")
 def presence(konvoi_id):
+    archive, konvoi_data = is_archive(konvoi_id)
+    if archive:
+        flash("Die Anwesenheit kann nicht bearbeitet werden, da der Konvoi älter ist und archiviert wurde.")
+        return redirect(url_for("konvoi.konvoi", konvoi_id=konvoi_id))
+
     if request.args["status"] not in ["attend", "missing", "unsure"]:
         return abort(flask.Response(response="Valid arguments for 'status' are: 'attend', 'missing', and 'unsure'", status=400))
 
